@@ -1,5 +1,7 @@
 # YAML Stats
 
+![Code Coverage](coverage.svg)
+
 Detects duplicate, different and missing key/value pairs between two YAML files
 
 ## Installation
