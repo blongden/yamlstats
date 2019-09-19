@@ -3,3 +3,4 @@ install:
 
 test:
 	nosetests --with-coverage --cover-erase --cover-package yamlstats --cover-html
+	coverage-badge -o coverage.svg

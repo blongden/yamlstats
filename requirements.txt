@@ -7,3 +7,4 @@ ruamel.ordereddict==0.4.14
 ruamel.yaml==0.16.5
 ruamel.yaml.clib==0.1.2
 coverage==4.5.4
+coverage-badge==1.0.1
