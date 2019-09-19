@@ -10,7 +10,8 @@ SEPARATOR = "#######################################" + os.linesep
 
 class YamlStats:
     """
-    Detects duplicate, different and missing key/value pairs between two YAML files
+    Detects duplicate, different and missing key/value pairs between
+    two YAML files
     """
 
     def __init__(self):
@@ -36,7 +37,8 @@ class YamlStats:
 
     def check_for_duplicates(self):
         """
-        Checks the two YAML files for identical key/value pairs and adds them to a list
+        Checks the two YAML files for identical key/value pairs and
+        adds them to a list
         """
         duplicates = []
         for key in self.file_b_contents.keys():
@@ -52,7 +54,8 @@ class YamlStats:
 
     def check_for_differences(self):
         """
-        Checks the two YAML files for matching keys with different values and adds them to a list
+        Checks the two YAML files for matching keys with different values and
+        adds them to a list
         """
         differences = []
         for key in self.file_b_contents.keys():
@@ -120,6 +123,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("a", help="First File to Diff")
     parser.add_argument("b", help="Second File to Diff")
-    parser.add_argument("-d", "--differences", help="Show a table of the differences in values", dest="differences", action="store_true")
+    parser.add_argument("-d", "--differences",
+                        help="Show a table of the differences in values",
+                        dest="differences", action="store_true")
     args = parser.parse_args()
     print(run(args.a, args.b, args.differences))
