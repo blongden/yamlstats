@@ -12,7 +12,7 @@ Detects duplicate, different and missing key/value pairs between two YAML files
 
 ### Print a list of configuration items that are identical in both files
 
-```./yamlstats.py file1.yml file2.yml```
+```./main.py file1.yml file2.yml```
 
 ```
 #######################################
@@ -27,7 +27,7 @@ Elite
 
 ### Print a table of configuration items that have different values
 
-```./yamlstats.py -d file1.yml file2.yml```
+```./main.py -d file1.yml file2.yml```
 
 ```
 +-----------+-----------------------------------------+-------------------------------------------+
