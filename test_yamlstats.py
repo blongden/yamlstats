@@ -37,4 +37,4 @@ class TestYamlStats(unittest.TestCase):
         response = ys.run('examples/file1.yaml', 'examples/file3.yaml', True)
 
         # assert
-        self.assertIn('| languages |', response.__str__())
+        self.assertRegexpMatches(response.__str__(), '|%s+languages%s+|')

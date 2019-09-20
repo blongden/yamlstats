@@ -6,6 +6,7 @@ from ruamel import yaml
 from beautifultable import BeautifulTable
 
 SEPARATOR = "#######################################" + os.linesep
+MIN_TERMINAL_WIDTH = 160
 
 
 class YamlStats:
@@ -102,7 +103,8 @@ class YamlStats:
 
     def print_differences(self, differences):
         _, column_width = os.popen('stty size', 'r').read().split()
-        table = BeautifulTable(max_width=int(column_width, 10))
+        max_width = int(column_width, 10) if int(column_width, 10) < MIN_TERMINAL_WIDTH else MIN_TERMINAL_WIDTH
+        table = BeautifulTable(max_width=max_width)
         table.column_headers = ['Key', self.file_a, self.file_b]
         for difference in differences:
             table.append_row([
