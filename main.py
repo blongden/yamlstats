@@ -95,7 +95,8 @@ class YamlStats:
     def print_duplicates(self, duplicates):
         output = SEPARATOR
         for duplicate in duplicates:
-            output += ("%s is the same in both files:" % duplicate["key"]) + os.linesep
+            output += ("%s is the same in both files:" %
+                       duplicate["key"]) + os.linesep
             output += str(duplicate["value"]) + os.linesep
             output += SEPARATOR
 
@@ -103,7 +104,8 @@ class YamlStats:
 
     def print_differences(self, differences):
         _, column_width = os.popen('stty size', 'r').read().split()
-        max_width = int(column_width, 10) if int(column_width, 10) < MIN_TERMINAL_WIDTH else MIN_TERMINAL_WIDTH
+        max_width = int(column_width, 10) if int(
+            column_width, 10) < MIN_TERMINAL_WIDTH else MIN_TERMINAL_WIDTH
         table = BeautifulTable(max_width=max_width)
         table.column_headers = ['Key', self.file_a, self.file_b]
         for difference in differences:
