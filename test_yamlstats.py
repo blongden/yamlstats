@@ -37,4 +37,4 @@ class TestYamlStats(unittest.TestCase):
         response = ys.run('examples/file1.yaml', 'examples/file3.yaml', True)
 
         # assert
-        self.assertIn('examples/file1.yaml', response.__str__())
+        self.assertIn('| languages |', response.__str__())
