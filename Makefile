@@ -1,5 +1,5 @@
 install:
-	pip install --user -r requirements.txt
+	pip3 install --user -r requirements.txt
 
 test:
 	nosetests --with-coverage --cover-erase --cover-package . --cover-html

@@ -4,6 +4,7 @@ import argparse
 import os
 from ruamel import yaml
 from beautifultable import BeautifulTable
+from termcolor import colored
 
 SEPARATOR = "#######################################" + os.linesep
 MIN_TERMINAL_WIDTH = 160
@@ -77,7 +78,21 @@ class YamlStats:
 
         return differences
 
-    def run(self, file_a, file_b, show_differences):
+    def check_for_additional_keys(self):
+        """
+        Checks the two YAML files for keys present in one but not the other
+        """
+        additional_keys_in_file_a = list(
+            set(self.file_a_contents.keys()) - set(self.file_b_contents.keys()))
+        additional_keys_in_file_b = list(
+            set(self.file_b_contents.keys()) - set(self.file_a_contents.keys()))
+
+        return {
+            "file_a": additional_keys_in_file_a,
+            "file_b": additional_keys_in_file_b
+        }
+
+    def run(self, file_a, file_b, show_differences, show_additional):
         output = ""
         self.load(file_a, file_b)
 
@@ -89,6 +104,11 @@ class YamlStats:
             differences = self.check_for_differences()
             if differences:
                 output += self.print_differences(differences)
+
+        if show_additional:
+            additional = self.check_for_additional_keys()
+            if additional:
+                output += self.print_additional(additional)
 
         return output
 
@@ -103,24 +123,48 @@ class YamlStats:
         return output
 
     def print_differences(self, differences):
-        _, column_width = os.popen('stty size', 'r').read().split()
-        max_width = int(column_width, 10) if int(
-            column_width, 10) < MIN_TERMINAL_WIDTH else MIN_TERMINAL_WIDTH
-        table = BeautifulTable(max_width=max_width)
-        table.column_headers = ['Key', self.file_a, self.file_b]
+        table = self._create_table()
+        table.column_headers = [
+            colored('Key', 'white', attrs=['bold']),
+            colored(self.file_a, 'white', attrs=['bold']),
+            colored(self.file_b, 'white', attrs=['bold']),
+        ]
         for difference in differences:
             table.append_row([
-                difference["key"],
-                difference["file_a"]["value"],
-                difference["file_b"]["value"]
+                colored(difference["key"], 'blue', attrs=['bold']),
+                colored(difference["file_a"]["value"], 'red', attrs=['bold']),
+                colored(difference["file_b"]["value"], 'green', attrs=['bold']),
             ])
 
         return table.get_string()
 
+    def print_additional(self, additional):
+        number_of_items_in_file_a = len(additional["file_a"])
+        number_of_items_in_file_b = len(additional["file_b"])
+        number_of_keys = number_of_items_in_file_a if number_of_items_in_file_a > number_of_items_in_file_b else number_of_items_in_file_b
 
-def run(a, b, differences=False):
+        table = self._create_table()
+        table.column_headers = [
+            colored(self.file_a, 'white', attrs=['bold']),
+            colored(self.file_b, 'white', attrs=['bold']),
+        ]
+        for i in range(number_of_keys):
+            table.append_row([
+                colored(additional["file_a"][i] if number_of_items_in_file_a > i else '', 'red', attrs=['bold']),
+                colored(additional["file_b"][i] if number_of_items_in_file_b > i else '', 'green', attrs=['bold'])
+            ])
+        return table.get_string()
+
+    def _create_table(self):
+        _, column_width = os.popen('stty size', 'r').read().split()
+        max_width = int(column_width, 10) if int(
+            column_width, 10) > MIN_TERMINAL_WIDTH else MIN_TERMINAL_WIDTH
+        return BeautifulTable(max_width=max_width)
+
+
+def run(a, b, differences=False, additional=False):
     ys = YamlStats()
-    return ys.run(a, b, differences)
+    return ys.run(a, b, differences, additional)
 
 
 if __name__ == "__main__":
@@ -130,5 +174,8 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--differences",
                         help="Show a table of the differences in values",
                         dest="differences", action="store_true")
+    parser.add_argument("-a", "--additional",
+                        help="Show a table of the additional keys not found in the other file",
+                        dest="additional", action="store_true")
     args = parser.parse_args()
-    print(run(args.a, args.b, args.differences))
+    print(run(args.a, args.b, args.differences, args.additional))
