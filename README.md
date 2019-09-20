@@ -1,6 +1,7 @@
 # YAML Stats
 
 ![Code Coverage](coverage.svg)
+[![CircleCI](https://circleci.com/gh/jwholdsworth/yamlstats.svg?style=svg)](https://circleci.com/gh/jwholdsworth/yamlstats)
 
 Detects duplicate, different and missing key/value pairs between two YAML files
 
