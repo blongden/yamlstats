@@ -6,7 +6,6 @@ from ruamel import yaml
 from beautifultable import BeautifulTable
 from termcolor import colored
 
-SEPARATOR = "#######################################" + os.linesep
 MIN_TERMINAL_WIDTH = 160
 
 
@@ -98,29 +97,33 @@ class YamlStats:
 
         duplicates = self.check_for_duplicates()
         if duplicates:
-            output += self.print_duplicates(duplicates)
+            output += self.print_duplicates(duplicates) + os.linesep
 
         if show_differences:
             differences = self.check_for_differences()
             if differences:
-                output += self.print_differences(differences)
+                output += self.print_differences(differences) + os.linesep
 
         if show_additional:
             additional = self.check_for_additional_keys()
             if additional:
-                output += self.print_additional(additional)
+                output += self.print_additional(additional) + os.linesep
 
         return output
 
     def print_duplicates(self, duplicates):
-        output = SEPARATOR
+        table = self._create_table()
+        table.column_headers = [
+            colored('Key', 'white', attrs=['bold']),
+            colored('Value', 'white', attrs=['bold']),
+        ]
         for duplicate in duplicates:
-            output += ("%s is the same in both files:" %
-                       duplicate["key"]) + os.linesep
-            output += str(duplicate["value"]) + os.linesep
-            output += SEPARATOR
+            table.append_row([
+                colored(duplicate['key'], 'blue', attrs=['bold']),
+                colored(str(duplicate['value']), 'white', attrs=['bold']),
+            ])
 
-        return output
+        return 'Duplicates:' + os.linesep + table.get_string()
 
     def print_differences(self, differences):
         table = self._create_table()
@@ -136,7 +139,7 @@ class YamlStats:
                 colored(difference["file_b"]["value"], 'green', attrs=['bold']),
             ])
 
-        return table.get_string()
+        return 'Different Values:' + os.linesep + table.get_string()
 
     def print_additional(self, additional):
         number_of_items_in_file_a = len(additional["file_a"])
@@ -153,7 +156,7 @@ class YamlStats:
                 colored(additional["file_a"][i] if number_of_items_in_file_a > i else '', 'red', attrs=['bold']),
                 colored(additional["file_b"][i] if number_of_items_in_file_b > i else '', 'green', attrs=['bold'])
             ])
-        return table.get_string()
+        return 'Different Keys:' + os.linesep + table.get_string()
 
     def _create_table(self):
         _, column_width = os.popen('stty size', 'r').read().split()

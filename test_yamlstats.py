@@ -9,14 +9,14 @@ class TestYamlStats(unittest.TestCase):
         response = main.run('examples/file1.yaml', 'examples/file2.yaml')
 
         # assert
-        self.assertNotIn("name is the same in both files", response)
+        self.assertNotRegex(response.__str__(), r'name')
 
     def test_name_is_duplicated_in_files_2_and_3(self):
         # act
         response = main.run('examples/file2.yaml', 'examples/file3.yaml')
 
         # assert
-        self.assertIn("name is the same in both files", response)
+        self.assertRegex(response.__str__(), r'name')
 
     def test_name_has_different_values_in_files_1_and_3(self):
         # arrange
@@ -29,7 +29,17 @@ class TestYamlStats(unittest.TestCase):
         self.assertIn({'file_a': {'file_name': 'examples/file1.yaml', 'value': 'Martin Devloper'}, 'key': 'name',
                        'file_b': {'file_name': 'examples/file3.yaml', 'value': "Martin D'vloper"}}, response)
 
-    def test_it_prints_out_a_table(self):
+    def test_there_are_additional_keys_in_files_2_and_3(self):
+        # arrange
+        ys = main.YamlStats()
+        ys.load('examples/file2.yaml', 'examples/file3.yaml')
+        # act
+        response = ys.check_for_additional_keys()
+
+        # assert
+        self.assertEqual({'file_a': ['location'], 'file_b': ['university']}, response)
+
+    def test_it_prints_out_a_table_of_differences(self):
         # arrange
         ys = main.YamlStats()
 
@@ -37,4 +47,15 @@ class TestYamlStats(unittest.TestCase):
         response = ys.run('examples/file1.yaml', 'examples/file3.yaml', show_differences=True, show_additional=False)
 
         # assert
-        self.assertRegexpMatches(response.__str__(), '|%s+languages%s+|')
+        self.assertRegex(response.__str__(), r'languages')
+
+    def test_it_prints_out_a_table_of_additional_keys(self):
+        # arrange
+        ys = main.YamlStats()
+
+        # act
+        response = ys.run('examples/file2.yaml', 'examples/file3.yaml', show_differences=False, show_additional=True)
+
+        # assert
+        self.assertIn('university', response.__str__())
+        self.assertIn('location', response.__str__())

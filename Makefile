@@ -3,4 +3,4 @@ install:
 
 test:
 	nosetests --with-coverage --cover-erase --cover-package . --cover-html
-	coverage-badge -o coverage.svg
+	coverage-badge -f -o coverage.svg
