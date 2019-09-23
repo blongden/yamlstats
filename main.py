@@ -60,6 +60,8 @@ class YamlStats:
         """
         differences = []
         for key in self.file_b_contents.keys():
+            if not self.file_a_contents.get(key) or not self.file_b_contents.get(key):
+                continue
             if self.file_b_contents.get(key) != self.file_a_contents.get(key):
                 differences.append(
                     {
@@ -123,7 +125,7 @@ class YamlStats:
                 colored(str(duplicate['value']), 'white', attrs=['bold']),
             ])
 
-        return 'Duplicates:' + os.linesep + table.get_string()
+        return 'The following values are identical in both files:' + os.linesep + table.get_string()
 
     def print_differences(self, differences):
         table = self._create_table()
@@ -139,7 +141,7 @@ class YamlStats:
                 colored(difference["file_b"]["value"], 'green', attrs=['bold']),
             ])
 
-        return 'Different Values:' + os.linesep + table.get_string()
+        return 'The following values are different in both files:' + os.linesep + table.get_string()
 
     def print_additional(self, additional):
         number_of_items_in_file_a = len(additional["file_a"])
@@ -156,7 +158,7 @@ class YamlStats:
                 colored(additional["file_a"][i] if number_of_items_in_file_a > i else '', 'red', attrs=['bold']),
                 colored(additional["file_b"][i] if number_of_items_in_file_b > i else '', 'green', attrs=['bold'])
             ])
-        return 'Different Keys:' + os.linesep + table.get_string()
+        return 'The following keys are defined in one file, but not the other:' + os.linesep + table.get_string()
 
     def _create_table(self):
         _, column_width = os.popen('stty size', 'r').read().split()

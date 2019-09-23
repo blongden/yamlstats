@@ -29,6 +29,16 @@ class TestYamlStats(unittest.TestCase):
         self.assertIn({'file_a': {'file_name': 'examples/file1.yaml', 'value': 'Martin Devloper'}, 'key': 'name',
                        'file_b': {'file_name': 'examples/file3.yaml', 'value': "Martin D'vloper"}}, response)
 
+    def test_missing_keys_are_not_printed_as_differences(self):
+        # arrange
+        ys = main.YamlStats()
+        ys.load('examples/file1.yaml', 'examples/file3.yaml')
+        # act
+        response = ys.check_for_differences()
+
+        # assert
+        self.assertNotIn('university', response)
+
     def test_there_are_additional_keys_in_files_2_and_3(self):
         # arrange
         ys = main.YamlStats()
