@@ -27,14 +27,15 @@ class YamlStats:
         """
         self.file_a = file_a
         self.file_b = file_b
+        self.file_a_contents = self._load_file(file_a)
+        self.file_b_contents = self._load_file(file_b)
 
-        with open(file_a, 'r') as f:
-            self.file_a_contents = yaml.round_trip_load(
-                f.read(), preserve_quotes=True)
-
-        with open(file_b, 'r') as f:
-            self.file_b_contents = yaml.round_trip_load(
-                f.read(), preserve_quotes=True)
+    def _load_file(self, file_name):
+        with open(file_name, 'r') as f:
+            try:
+                return yaml.round_trip_load(f.read(), preserve_quotes=True)
+            except yaml.constructor.DuplicateKeyError as e:
+                raise DuplicateKeyException("%s in file %s" % (e.problem, file_name))
 
     def check_for_duplicates(self):
         """
@@ -95,7 +96,10 @@ class YamlStats:
 
     def run(self, file_a, file_b, show_differences, show_additional):
         output = ""
-        self.load(file_a, file_b)
+        try:
+            self.load(file_a, file_b)
+        except DuplicateKeyException as e:
+            return colored(e, 'red', attrs=['bold'])
 
         duplicates = self.check_for_duplicates()
         if duplicates:
@@ -165,6 +169,10 @@ class YamlStats:
         max_width = int(column_width, 10) if int(
             column_width, 10) > MIN_TERMINAL_WIDTH else MIN_TERMINAL_WIDTH
         return BeautifulTable(max_width=max_width)
+
+
+class DuplicateKeyException(Exception):
+    pass
 
 
 def run(a, b, differences=False, additional=False):

@@ -69,3 +69,13 @@ class TestYamlStats(unittest.TestCase):
         # assert
         self.assertIn('university', response.__str__())
         self.assertIn('location', response.__str__())
+
+    def test_it_cleanly_reports_duplicate_entries(self):
+        # arrange
+        ys = main.YamlStats()
+
+        # act
+        response = ys.run('examples/duplicates.yaml', 'examples/file3.yaml', show_differences=False, show_additional=True)
+
+        # assert
+        self.assertRegex(response, 'found duplicate key "name"')
